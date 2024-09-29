@@ -21,14 +21,21 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  modal,
 }: Readonly<{
   children: React.ReactNode;
+  modal: React.ReactNode;
 }>) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
-          <ToastProvider>{children}</ToastProvider>
+          <ToastProvider>
+            <main className="flex flex-col items-center min-h-screen h-auto   mx-auto bg-slate-800">
+              {children}
+              {modal}
+            </main>
+          </ToastProvider>
         </Providers>
       </body>
     </html>

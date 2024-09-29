@@ -2,7 +2,7 @@
 
 import { FC, useCallback, useEffect, useState } from 'react';
 import { getEvents } from '@/services/api';
-import { IEventResponse, IEventsParams } from '@/interfaces/requestInterfaces';
+import { IEventResponse, IEventsParams } from '@/interfaces/apiInterfaces';
 import LoadMore from '../Buttons/LoadMore/LoadMore';
 import {
   Button,
@@ -12,9 +12,11 @@ import {
   CardHeader,
   Divider,
   Spinner,
+  useDisclosure,
 } from '@nextui-org/react';
 import { handleError } from '@/services/errorHandler';
 import { toast } from 'react-toastify';
+import Link from 'next/link';
 
 const EventList: FC = () => {
   const [events, setEvents] = useState<IEventResponse[]>([]);
@@ -22,6 +24,7 @@ const EventList: FC = () => {
   const [page, setPage] = useState(1);
   const [isLoading, setIsloading] = useState(true);
   const [isError, setIsError] = useState(false);
+  const { onOpen } = useDisclosure();
 
   const loadEvents = useCallback(async (page: number) => {
     const limit = 10; //to constants
@@ -57,47 +60,53 @@ const EventList: FC = () => {
 
   if (!isError)
     return (
-      <div className="py-8 px-10 ">
-        <ul className="gap-3 grid grid-cols-3 sm:grid-cols-5 auto-rows-fr mb-5">
-          {events.map((event: IEventResponse) => (
-            <li key={event._id} className="flex text-sm font-light text-gray-900">
-              <Card
-                className="bg-slate-400 cursor-pointer"
-                shadow="md"
-                radius="sm"
-                fullWidth
-                isHoverable
-              >
-                <CardHeader className="text-center text-lg font-bold">
-                  <h2>{event.title}</h2>
-                </CardHeader>
-                <Divider />
-                <CardBody className="text-justify">
-                  <p className="text-md">{event.description}</p>
-                </CardBody>
-                <CardFooter className="flex flex-col gap-3">
-                  <div className="w-full flex flex-row justify-between font-bold">
-                    <p className="text-md">{event.organizer}</p>
-                    <p className="text-md">
-                      {event.eventDate.slice(0, 10).split('-').reverse().join('-')}
-                    </p>
-                  </div>
+      <>
+        <div className="py-8 px-10 ">
+          <ul className="gap-3 grid grid-cols-3 sm:grid-cols-5 auto-rows-fr mb-5">
+            {events.map((event: IEventResponse) => (
+              <li key={event._id} className="flex text-sm font-light text-gray-900">
+                <Card
+                  className="bg-slate-400 cursor-pointer"
+                  shadow="md"
+                  radius="sm"
+                  fullWidth
+                  isHoverable
+                >
+                  <CardHeader className="text-center text-lg font-bold">
+                    <h2>{event.title}</h2>
+                  </CardHeader>
                   <Divider />
-                  <div className="w-full flex flex-row justify-between font-s">
-                    <Button>Register</Button>
-                    <Button>View</Button>
-                  </div>
-                </CardFooter>
-              </Card>
-            </li>
-          ))}
-        </ul>
-        {isLoading ? (
-          <Spinner label="Loading..." color="default" labelColor="secondary" />
-        ) : (
-          <LoadMore enabled={isMoreData} handleClick={loadMoreEvents} />
-        )}
-      </div>
+                  <CardBody className="text-justify">
+                    <p className="text-md">{event.description}</p>
+                  </CardBody>
+                  <CardFooter className="flex flex-col gap-3">
+                    <div className="w-full flex flex-row justify-between font-bold">
+                      <p className="text-md">{event.organizer}</p>
+                      <p className="text-md">
+                        {event.eventDate.slice(0, 10).split('-').reverse().join('-')}
+                      </p>
+                    </div>
+                    <Divider />
+                    <div className="w-full flex flex-row justify-between font-s">
+                      <Button href={`/${event._id}`} as={Link} onPress={onOpen}>
+                        Register
+                      </Button>
+                      <Button href={`/${event._id}/participants`} as={Link}>
+                        View
+                      </Button>
+                    </div>
+                  </CardFooter>
+                </Card>
+              </li>
+            ))}
+          </ul>
+          {isLoading ? (
+            <Spinner label="Loading..." color="default" labelColor="secondary" />
+          ) : (
+            <LoadMore enabled={isMoreData} handleClick={loadMoreEvents} />
+          )}
+        </div>
+      </>
     );
 };
 
