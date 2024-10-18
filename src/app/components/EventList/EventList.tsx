@@ -2,20 +2,19 @@
 
 import { FC, useState } from 'react';
 import { IEventResponse } from '@/interfaces/apiInterfaces';
-import LoadMore from '../Buttons/LoadMore/LoadMore';
-import { Spinner, useDisclosure } from '@nextui-org/react';
+import { Pagination, Spinner, useDisclosure } from '@nextui-org/react';
 import EventCard from '../EventCard/EventCard';
-import useEvents from '@/interfaces/hooks/useEvents';
+import useEvents from '@/app/hooks/useEvents';
 
 const EventList: FC = () => {
   const [page, setPage] = useState(1);
-  const { events, isError, isLoading, isMoreData } = useEvents(page);
+  const { events, isError, isLoading, total } = useEvents(page);
   const { onOpen: openModal } = useDisclosure();
 
   if (!isError) {
     return (
       <>
-        <div className="py-8 px-10 ">
+        <div className="py-8 px-10 flex flex-col items-center">
           <ul className="gap-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 auto-rows-fr mb-5">
             {events.map((event: IEventResponse) => (
               <li
@@ -33,9 +32,12 @@ const EventList: FC = () => {
               labelColor="secondary"
             />
           ) : (
-            <LoadMore
-              enabled={isMoreData}
-              handleClick={() => setPage(page + 1)}
+            <Pagination
+              showShadow
+              showControls
+              total={total}
+              page={page}
+              onChange={setPage}
             />
           )}
         </div>

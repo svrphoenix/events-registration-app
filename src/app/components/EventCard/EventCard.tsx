@@ -20,7 +20,7 @@ interface EventCardProps {
 const EventCard: React.FC<EventCardProps> = ({ event, openModal }) => {
   return (
     <Card
-      className="min-w-[196px] max-w-[220px] bg-slate-400 cursor-pointer"
+      className="min-w-[196px] max-w-[220px] min-h-[320px] bg-slate-400 cursor-pointer"
       shadow="md"
       radius="sm"
       fullWidth
